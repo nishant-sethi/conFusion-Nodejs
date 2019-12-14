@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+var authenticate = require('../authenticate');
 
 const Leaders = require('../models/leaders');
 
@@ -15,7 +16,7 @@ leaderRouter.route('/')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next) => {
         Leaders.create(req.body)
             .then((leader) => {
                 console.log('Promotion created ', promotion);
@@ -25,11 +26,11 @@ leaderRouter.route('/')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next) => {
         res.statusCode = 403; // operation not supported
         res.end('PUT not supported ');
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next) => {
         Leaders.remove({})
             .then((resp) => {
                 res.statusCode = 200;
@@ -51,11 +52,11 @@ leaderRouter.route('/:leaderId')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next) => {
         res.statusCode = 403; // operation not supported
         res.end('POST not supported ');
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next) => {
         Leaders.findByIdAndUpdate(req.params.leaderId, {
             $set: req.body
         }, {
@@ -68,7 +69,7 @@ leaderRouter.route('/:leaderId')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next) => {
         Leaders.findByIdAndRemove(req.params.leaderId)
             .then((resp) => {
                 res.statusCode = 200;
